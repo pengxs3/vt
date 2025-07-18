@@ -1,0 +1,68 @@
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+    <id>distribution</id>
+    <formats>
+        <format>zip</format> <!-- 可以是 zip, tar.gz 等 -->
+    </formats>
+    <includeBaseDirectory>true</includeBaseDirectory> <!-- 在压缩包内创建一个与 finalName 同名的根目录 -->
+    <baseDirectory>${project.artifactId}-${project.version}</baseDirectory>
+
+    <!-- 1. 复制依赖 JAR 包到 baselib 目录 -->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>baselib</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact> <!-- 不包含项目自身的 artifact -->
+            <scope>runtime</scope> <!-- 只包含 runtime 和 compile 范围的依赖 -->
+        </dependencySet>
+    </dependencySets>
+
+    <!-- 2. 复制项目自身的 JAR 包到 mylib 目录 -->
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}</directory> <!-- target 目录 -->
+            <outputDirectory>mylib</outputDirectory>
+            <includes>
+                <include>${project.build.finalName}.jar</include> <!-- 项目构建的 JAR -->
+            </includes>
+        </fileSet>
+
+        <!-- 3. 复制配置文件到 config 目录 -->
+        <fileSet>
+            <directory>src/main/resources/config</directory> <!-- 假设配置文件在此 -->
+            <outputDirectory>config</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>doc</directory> <!-- 假设配置文件在此 -->
+            <outputDirectory>doc</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>sql</directory> <!-- 假设配置文件在此 -->
+            <outputDirectory>sql</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- 4. (可选) 复制启动脚本 -->
+        <fileSet>
+            <directory>startsh</directory> <!-- 假设启动脚本在此 -->
+            <outputDirectory>/</outputDirectory> <!-- 放在分发包的根目录 -->
+            <includes>
+                <include>startup.sh</include>
+                <include>shutdown.sh</include>
+                <include>startup.bat</include>
+                <include>shutdown.bat</include>
+            </includes>
+            <fileMode>0755</fileMode> <!-- 给 shell 脚本执行权限 -->
+        </fileSet>
+    </fileSets>
+</assembly>
